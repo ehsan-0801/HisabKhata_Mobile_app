@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 
@@ -68,73 +69,158 @@ class _LoginScreenState extends State<LoginScreen> {
     final s = context.s;
     final dark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      appBar: AppBar(actions: const [LangButton(), ThemeButton(), SizedBox(width: 8)]),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Image.asset(dark ? 'assets/brand/logo-dark.png' : 'assets/brand/logo.png', height: 48),
-                  const SizedBox(height: 24),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: AutofillGroup(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(s.signInTitle, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-                            const SizedBox(height: 4),
-                            Text(s.signInIntro, style: TextStyle(color: context.colors.onSurfaceVariant, fontSize: 13.5)),
-                            const SizedBox(height: 20),
-                            TextField(
-                              controller: _id,
-                              autofillHints: const [AutofillHints.username, AutofillHints.email],
-                              keyboardType: TextInputType.emailAddress,
-                              autocorrect: false,
-                              textInputAction: TextInputAction.next,
-                              decoration: InputDecoration(labelText: s.identifier),
-                            ),
-                            const SizedBox(height: 12),
-                            TextField(
-                              controller: _password,
-                              obscureText: !_show,
-                              autofillHints: const [AutofillHints.password],
-                              textInputAction: TextInputAction.done,
-                              onSubmitted: (_) => _submit(),
-                              decoration: InputDecoration(
-                                labelText: s.password,
-                                suffixIcon: IconButton(
-                                  tooltip: _show ? s.hidePassword : s.showPassword,
-                                  icon: Icon(_show ? Icons.visibility_off_outlined : Icons.visibility_outlined),
-                                  onPressed: () => setState(() => _show = !_show),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        actions: const [LangButton(), ThemeButton(), SizedBox(width: 8)],
+      ),
+      body: Stack(
+        children: [
+          const Positioned.fill(child: _LoginBackground()),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 420),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Image.asset(
+                        dark
+                            ? 'assets/brand/logo-dark.png'
+                            : 'assets/brand/logo.png',
+                        height: 48,
+                      ),
+                      const SizedBox(height: 24),
+                      Card(
+                        color: context.colors.surface.withValues(alpha: 0.9),
+                        elevation: 8,
+                        shadowColor: Colors.black26,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: AutofillGroup(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  s.signInTitle,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  s.signInIntro,
+                                  style: TextStyle(
+                                    color: context.colors.onSurfaceVariant,
+                                    fontSize: 13.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                TextField(
+                                  controller: _id,
+                                  autofillHints: const [
+                                    AutofillHints.username,
+                                    AutofillHints.email,
+                                  ],
+                                  keyboardType: TextInputType.emailAddress,
+                                  autocorrect: false,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: InputDecoration(
+                                    labelText: s.identifier,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                TextField(
+                                  controller: _password,
+                                  obscureText: !_show,
+                                  autofillHints: const [AutofillHints.password],
+                                  textInputAction: TextInputAction.done,
+                                  onSubmitted: (_) => _submit(),
+                                  decoration: InputDecoration(
+                                    labelText: s.password,
+                                    suffixIcon: IconButton(
+                                      tooltip: _show
+                                          ? s.hidePassword
+                                          : s.showPassword,
+                                      icon: Icon(
+                                        _show
+                                            ? Icons.visibility_off_outlined
+                                            : Icons.visibility_outlined,
+                                      ),
+                                      onPressed: () =>
+                                          setState(() => _show = !_show),
+                                    ),
+                                  ),
+                                ),
+                                if (_error != null) ...[
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    _wait > 0 ? s.tooMany(_wait) : _error!,
+                                    style: TextStyle(
+                                      color: context.colors.error,
+                                      fontSize: 13.5,
+                                    ),
+                                  ),
+                                ],
+                                const SizedBox(height: 20),
+                                FilledButton(
+                                  onPressed: _busy || _wait > 0
+                                      ? null
+                                      : _submit,
+                                  child: Text(_busy ? s.signingIn : s.signIn),
+                                ),
+                              ],
                             ),
-                            if (_error != null) ...[
-                              const SizedBox(height: 12),
-                              Text(_wait > 0 ? s.tooMany(_wait) : _error!, style: TextStyle(color: context.colors.error, fontSize: 13.5)),
-                            ],
-                            const SizedBox(height: 20),
-                            FilledButton(
-                              onPressed: _busy || _wait > 0 ? null : _submit,
-                              child: Text(_busy ? s.signingIn : s.signIn),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
+        ],
       ),
+    );
+  }
+}
+
+/// Bazar vegetables, blurred and faded behind the sign-in form (photo: Unsplash, KSa66AYiqnk).
+class _LoginBackground extends StatelessWidget {
+  const _LoginBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final bg = Theme.of(context).scaffoldBackgroundColor;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ImageFiltered(
+          imageFilter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+          child: Opacity(
+            opacity: dark ? 0.3 : 0.4,
+            child: Image.asset('assets/brand/login-bg.jpg', fit: BoxFit.cover),
+          ),
+        ),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                bg.withValues(alpha: 0.35),
+                bg.withValues(alpha: 0.6),
+                bg.withValues(alpha: 0.85),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -148,15 +234,25 @@ class NoMessScreen extends StatelessWidget {
     final s = context.s;
     final web = kApiBase.replaceFirst(RegExp(r'/api/v1/?$'), '');
     return Scaffold(
-      appBar: AppBar(title: const BrandTitle(), actions: const [LangButton(), ThemeButton(), SizedBox(width: 8)]),
+      appBar: AppBar(
+        title: const BrandTitle(),
+        actions: const [LangButton(), ThemeButton(), SizedBox(width: 8)],
+      ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              EmptyState(title: s.noMessTitle, hint: s.noMessIntro, icon: Icons.home_work_outlined),
-              SelectableText(web, style: TextStyle(color: context.colors.primary)),
+              EmptyState(
+                title: s.noMessTitle,
+                hint: s.noMessIntro,
+                icon: Icons.home_work_outlined,
+              ),
+              SelectableText(
+                web,
+                style: TextStyle(color: context.colors.primary),
+              ),
               const SizedBox(height: 20),
               OutlinedButton.icon(
                 onPressed: () => context.app.logout(),
