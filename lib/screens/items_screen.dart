@@ -48,6 +48,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
   Widget build(BuildContext context) {
     final app = context.read<AppState>();
     return Loader<List<Item>>(
+      cacheKey: 'items',
       load: () async => ((await app.api.get('/items'))['items'] as List).map((e) => Item.fromJson(e as Map)).toList(),
       builder: (context, items, reload) {
         final s = context.s;

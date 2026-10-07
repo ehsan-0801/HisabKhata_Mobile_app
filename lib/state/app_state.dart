@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../api/api.dart';
 import '../i18n/strings.dart';
 import '../models.dart';
+import '../widgets/common.dart' show loaderCache;
 
 enum Phase { booting, signedOut, noMess, ready, offline }
 
@@ -114,6 +115,7 @@ class AppState extends ChangeNotifier {
 
   /// Signs out this device only (forgets the token).
   Future<void> logout() async {
+    loaderCache.clear();
     await _clearToken();
     user = null;
     mess = null;
@@ -166,6 +168,7 @@ class AppState extends ChangeNotifier {
 
   void _dropSession() {
     if (_token == null) return;
+    loaderCache.clear();
     _clearToken();
     user = null;
     mess = null;

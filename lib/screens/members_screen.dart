@@ -29,6 +29,7 @@ class MembersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final app = context.read<AppState>();
     return Loader<_MembersData>(
+      cacheKey: 'members',
       load: () => _load(app),
       builder: (context, d, reload) {
         final s = context.s;

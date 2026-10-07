@@ -341,13 +341,19 @@ class ErrorView extends StatelessWidget {
 
 /// Loads data with [load], shows a spinner / error, then [builder]. Pull to refresh.
 class Loader<T> extends StatefulWidget {
-  const Loader({super.key, required this.load, required this.builder});
+  const Loader({super.key, required this.load, required this.builder, this.cacheKey});
   final Future<T> Function() load;
+
+  /// When set, the last data for this key is shown instantly while fresh data loads.
+  final String? cacheKey;
   final Widget Function(BuildContext context, T data, Future<void> Function() reload) builder;
 
   @override
   State<Loader<T>> createState() => LoaderState<T>();
 }
+
+/// Last loaded data per [Loader.cacheKey], for this app session (cleared on sign-out).
+final loaderCache = <String, Object?>{};
 
 class LoaderState<T> extends State<Loader<T>> {
   T? _data;
@@ -359,6 +365,11 @@ class LoaderState<T> extends State<Loader<T>> {
   void initState() {
     super.initState();
     _revision = context.read<AppState>().revision;
+    final cached = widget.cacheKey == null ? null : loaderCache[widget.cacheKey];
+    if (cached is T) {
+      _data = cached;
+      _loading = false;
+    }
     reload();
   }
 
@@ -369,6 +380,7 @@ class LoaderState<T> extends State<Loader<T>> {
     });
     try {
       final d = await widget.load();
+      if (widget.cacheKey != null) loaderCache[widget.cacheKey!] = d;
       if (!mounted) return;
       setState(() {
         _data = d;

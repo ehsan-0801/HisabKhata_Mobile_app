@@ -12,12 +12,13 @@ class Brand {
   static const background = Color(0xFFFBFCFB);
   static const danger = Color(0xFFC8372D);
 
-  static const darkBackground = Color(0xFF0F1A16);
-  static const darkCard = Color(0xFF15231E);
-  static const darkMuted = Color(0xFF1C2D27);
-  static const darkBorder = Color(0xFF263A33);
-  static const darkInk = Color(0xFFE6EFEB);
-  static const darkMutedInk = Color(0xFF94A89F);
+  // Dark mode: true black with neutral greys (no green tint); green/amber only as accents.
+  static const darkBackground = Color(0xFF000000);
+  static const darkCard = Color(0xFF121212);
+  static const darkMuted = Color(0xFF1F1F1F);
+  static const darkBorder = Color(0xFF2A2A2A);
+  static const darkInk = Color(0xFFF2F2F2);
+  static const darkMutedInk = Color(0xFFA3A3A3);
   static const darkDanger = Color(0xFFE5675C);
 
   /// Balance colours: who pays / who gets money back.
@@ -32,7 +33,7 @@ ThemeData buildTheme(Brightness brightness) {
   final scheme = ColorScheme(
     brightness: brightness,
     primary: dark ? Brand.greenLight : Brand.green,
-    onPrimary: dark ? Brand.darkBackground : Colors.white,
+    onPrimary: dark ? const Color(0xFF0A0A0A) : Colors.white,
     secondary: Brand.amber,
     onSecondary: Brand.ink,
     tertiary: Brand.amber,

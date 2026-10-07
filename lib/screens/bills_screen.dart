@@ -21,6 +21,7 @@ class _BillsScreenState extends State<BillsScreen> {
   Widget build(BuildContext context) {
     final app = context.read<AppState>();
     return Loader<List<BillType>>(
+      cacheKey: 'billTypes',
       load: () async => ((await app.api.get('/bill-types'))['billTypes'] as List).map((e) => BillType.fromJson(e as Map)).toList(),
       builder: (context, types, reload) {
         final s = context.s;
@@ -134,6 +135,7 @@ class _WhoPays extends StatelessWidget {
           const SizedBox(height: 8),
           Loader<List<MemberCharges>>(
               key: ValueKey(month),
+              cacheKey: 'charges:$month',
               load: () async => (((await app.api.get('/months/$month/charges'))['members'] as List?) ?? const [])
                   .map((e) => MemberCharges.fromJson(e as Map))
                   .toList(),

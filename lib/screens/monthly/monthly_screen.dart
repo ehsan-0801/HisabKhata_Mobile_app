@@ -79,6 +79,7 @@ class _MonthlyScreenState extends State<MonthlyScreen> with SingleTickerProvider
         Expanded(
           child: Loader<MonthBundle>(
             key: ValueKey(_month),
+            cacheKey: 'month:$_month',
             load: () => _load(_month),
             builder: (context, bundle, reload) => TabBarView(
               controller: _tabs,
