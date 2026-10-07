@@ -1,0 +1,100 @@
+# Builds the app on GitHub's machines:
+#  - iPhone: an UNSIGNED .ipa (sign + install it with Sideloadly/AltStore and a free Apple ID)
+#  - Android: a release .apk
+# Download both from the run's "Artifacts" section. Pushing a tag like v1.0.0
+# also attaches them to a GitHub Release.
+name: Build apps
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+    paths-ignore: ["**.md"]
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios:
+    name: iPhone (.ipa, unsigned)
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get packages
+        run: flutter pub get
+
+      - name: Check code
+        run: |
+          flutter analyze
+          flutter test
+
+      - name: Build for iPhone (no signing)
+        run: flutter build ios --release --no-codesign
+
+      - name: Package .ipa
+        run: |
+          mkdir -p build/ipa/Payload
+          cp -R build/ios/iphoneos/Runner.app build/ipa/Payload/
+          cd build/ipa && zip -qr HisabKhata-unsigned.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HisabKhata-ios
+          path: build/ipa/HisabKhata-unsigned.ipa
+          retention-days: 30
+
+  android:
+    name: Android (.apk)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Build APK
+        run: |
+          flutter pub get
+          flutter build apk --release
+          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/HisabKhata.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HisabKhata-android
+          path: build/app/outputs/flutter-apk/HisabKhata.apk
+          retention-days: 30
+
+  release:
+    name: GitHub Release (tags only)
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [ios, android]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/HisabKhata-unsigned.ipa
+            dist/HisabKhata.apk
