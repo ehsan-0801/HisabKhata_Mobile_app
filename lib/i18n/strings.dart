@@ -125,41 +125,47 @@ class S {
   String get mealNoMembers => t('No members this month. Add members on the Members page to record meals.', 'এই মাসে কোনো মেম্বার নেই। মিল লিখতে মেম্বার পেজে মেম্বার যোগ করুন।');
   String daysRange(int a, int b) => bn ? '$a–$b তারিখ' : 'Days $a–$b';
 
-  // ---- rent
+  // ---- rent (same wording as the web's rent section)
+  String bazarOf(String m) => bn ? 'বাজার · $m' : 'Bazar · $m';
+  String mealsOf(String m) => bn ? 'মিল · $m' : 'Meals · $m';
+  String mealRateOf(String m) => bn ? 'মিল রেট · $m' : 'Meal rate · $m';
+  String billsOf(String m) => bn ? 'বিল · $m' : 'Bills · $m';
   String settlementTitle(String m) => bn ? 'হিসাব — $m' : 'Settlement — $m';
-  String settlementIntro(String mealMonth, String month) => bn
-      ? '$mealMonth-এর মিল খরচ (মিল × মিল রেট) − $mealMonth-এ করা বাজার, সাথে $month-এর নিজের বিল ও সবার বিলের ভাগ।'
-      : '$mealMonth’s meal cost (meals × meal rate) − bazar done in $mealMonth, plus $month’s own bills and share of shared bills.';
+  /// Followed by the [membersPage] link and a full stop.
+  String settlementIntro(String mealMonth, String month, bool shared) => bn
+      ? '$mealMonth-এর মিল খরচ (মিল × মিল রেট) − $mealMonth-এ করা বাজার, সাথে $month-এর নিজের বিল${shared ? ' ও সবার বিলের ভাগ' : ''}। নিজের বিলের টাকা ঠিক করা হয় '
+      : '$mealMonth’s meal cost (meals × meal rate) − bazar paid in $mealMonth, plus $month’s personal bills${shared ? ' and shared-bill share' : ''}. Personal bill amounts are set on the ';
+  String get membersPage => t('Members page', 'মেম্বার পেজে');
+  String get fullStop => t('.', '।');
   String sharedTitle(String m) => bn ? 'সবার বিল — $m' : 'Shared bills — $m';
   String get sharedIntro => t(
-      'Optional: bills everyone splits equally this month (e.g. electricity). Leave it empty if every bill is personal.',
+      'Optional: bills split equally between everyone this month (e.g. electricity). Leave empty if all bills are personal.',
       'ঐচ্ছিক: এই মাসে যে বিল সবাই সমান ভাগে দেবে (যেমন বিদ্যুৎ)। সব বিল আলাদা হলে খালি রাখুন।');
   String rentNoMembers(String m) => bn ? '$m-এ কোনো মেম্বার নেই।' : 'No members in $m.';
   String get meals => t('Meals', 'মিল');
   String mealCostOf(String m) => bn ? 'মিল খরচ · $m' : 'Meal cost · $m';
-  String bazarPaidOf(String m) => bn ? 'বাজার করেছে · $m' : 'Bazar done · $m';
-  String get personalBills => t('Own bills', 'নিজের বিল');
+  String bazarPaidOf(String m) => bn ? 'বাজার করেছে · $m' : 'Paid for bazar · $m';
   String get sharedBills => t('Shared bills', 'সবার বিল');
   String get balance => t('Balance', 'ব্যালেন্স');
   String get pays => t('Pays', 'দেবে');
   String get getsBack => t('Gets back', 'পাবে');
   String get settled => t('Settled', 'মিটে গেছে');
   String mealLine(String m, String meals, String rate) => bn ? '$m-এর মিল $meals × $rate' : '$m meals $meals × $rate';
-  String get includeInTotal => t('Included in the total', 'মোটে ধরা হবে');
-  String get leftOut => t('Not counted in total and balance: ', 'মোট ও ব্যালেন্সে ধরা হয়নি: ');
+  String get includeInTotal => t('Include in total', 'মোটে ধরা হবে');
+  String get leftOut => t('Total and balance leave out ', 'মোট ও ব্যালেন্সে ধরা হয়নি: ');
   String get includeAll => t('Include all', 'সব ধরুন');
   String noBills(String m) => bn ? '$m-এর জন্য এখনো কোনো বিল নেই।' : 'No bills for $m yet.';
-  String copyBills(String from) => bn ? '$from থেকে বিল কপি করুন' : 'Copy bills from $from';
+  String copyBills(int n, String from) => bn ? '$from থেকে $nটি বিল কপি করুন' : 'Copy $n ${n == 1 ? 'bill' : 'bills'} from $from';
   String get totalBills => t('Total bills', 'মোট বিল');
   String eachMember(int n) => bn ? 'প্রতি জন ($n জন)' : 'Each member ($n)';
   String get bill => t('Bill', 'বিল');
-  String get billPlaceholder => t('e.g. Electricity', 'যেমন বিদ্যুৎ বিল');
+  String get billPlaceholder => t('e.g. House rent', 'যেমন বিদ্যুৎ বিল');
   String get addBill => t('Add bill', 'বিল যোগ করুন');
   String billUpdated(String name) => bn ? '$name আপডেট হয়েছে' : '$name updated';
   String get enterValidAmount => t('Enter a valid amount.', 'সঠিক টাকার পরিমাণ লিখুন।');
   List<String> get presets => bn
       ? ['বাসা ভাড়া', 'বুয়া', 'ওয়াইফাই', 'বিদ্যুৎ বিল', 'পানি', 'গ্যাস', 'রান্নার লোক', 'অন্যান্য']
-      : ['House rent', 'Maid', 'WiFi', 'Electricity', 'Water', 'Gas', 'Cook', 'Other'];
+      : ['House rent', 'Bua (maid)', 'WiFi', 'Electricity', 'Water', 'Gas', 'Cook', 'Other'];
 
   // ---- members
   String get membersIntro => t(

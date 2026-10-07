@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../state/app_state.dart';
 import '../widgets/common.dart';
 import 'bills_screen.dart';
 import 'items_screen.dart';
@@ -16,7 +18,22 @@ class HomeShell extends StatefulWidget {
 }
 
 class _HomeShellState extends State<HomeShell> {
-  int _index = 0;
+  late final ValueNotifier<int> _tab = context.read<AppState>().tab;
+  int get _index => _tab.value;
+
+  @override
+  void initState() {
+    super.initState();
+    _tab.addListener(_onTab);
+  }
+
+  @override
+  void dispose() {
+    _tab.removeListener(_onTab);
+    super.dispose();
+  }
+
+  void _onTab() => setState(() {});
 
   // Built lazily, then kept alive so switching tabs doesn't reload them.
   final _pages = <int, Widget>{};
@@ -51,7 +68,7 @@ class _HomeShellState extends State<HomeShell> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
-        onDestinationSelected: (i) => setState(() => _index = i),
+        onDestinationSelected: (i) => _tab.value = i,
         destinations: [
           NavigationDestination(icon: const Icon(Icons.calendar_month_outlined), selectedIcon: const Icon(Icons.calendar_month), label: s.monthly),
           NavigationDestination(icon: const Icon(Icons.group_outlined), selectedIcon: const Icon(Icons.group), label: s.members),

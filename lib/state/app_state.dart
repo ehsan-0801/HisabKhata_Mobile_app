@@ -30,6 +30,10 @@ class AppState extends ChangeNotifier {
   bool bn = true; // Bangla is the default, like the website.
   ThemeMode themeMode = ThemeMode.system;
 
+  /// The bottom-menu tab on screen (0 Monthly, 1 Members, 2 Bills, 3 Items, 4 Settings);
+  /// set it to jump there, e.g. from the Rent tab's "Members page" link.
+  final tab = ValueNotifier<int>(0);
+
   /// Bumped after every change so all open screens reload their data.
   int revision = 0;
   void changed() {
@@ -116,6 +120,7 @@ class AppState extends ChangeNotifier {
   /// Signs out this device only (forgets the token).
   Future<void> logout() async {
     loaderCache.clear();
+    tab.value = 0;
     await _clearToken();
     user = null;
     mess = null;
