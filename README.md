@@ -62,10 +62,10 @@ flutter build ipa                  # iOS (needs Xcode signing)
 ## Builds on GitHub (iPhone + Android, no Mac setup needed)
 
 `.github/workflows/build.yml` builds both apps on every push to `main`, and whenever you
-press **Actions → Build apps → Run workflow**:
+press **Actions → hisabkhata → Run workflow**:
 
-- **iPhone:** `HisabKhata-unsigned.ipa`, built on a GitHub macOS machine without signing
-- **Android:** `HisabKhata.apk`
+- **iPhone:** `hisabkhata.ipa`, built on a GitHub macOS machine without signing
+- **Android:** `hisabkhata.apk`
 
 Open the finished run and download them under **Artifacts**. Pushing a tag
 (`git tag v1.0.0 && git push --tags`) also attaches both files to a GitHub Release.
@@ -75,7 +75,7 @@ Open the finished run and download them under **Artifacts**. Pushing a tag
 An unsigned .ipa has to be signed with your Apple ID when you install it:
 
 1. Install **Sideloadly** (https://sideloadly.io) on a Mac or Windows PC. AltStore also works.
-2. Connect the iPhone and drag `HisabKhata-unsigned.ipa` into Sideloadly.
+2. Connect the iPhone and drag `hisabkhata.ipa` into Sideloadly.
 3. Enter your Apple ID and click **Start**.
 4. On the iPhone, turn on **Settings → Privacy & Security → Developer Mode**.
    Then trust your Apple ID under **Settings → General → VPN & Device Management**.
