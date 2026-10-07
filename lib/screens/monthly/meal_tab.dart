@@ -443,7 +443,7 @@ class _MealTabState extends State<MealTab> {
                           child: Container(
                             alignment: Alignment.center,
                             height: 30,
-                            decoration: d == _day ? BoxDecoration(color: c.primary, borderRadius: BorderRadius.circular(6)) : null,
+                            decoration: d == _day ? BoxDecoration(gradient: Brand.gradient(context), borderRadius: BorderRadius.circular(6)) : null,
                             child: Text('$d', style: _head(c).copyWith(color: d == _day ? c.onPrimary : null)),
                           ),
                         ),
@@ -617,7 +617,7 @@ class _DayStripState extends State<_DayStrip> {
               borderRadius: BorderRadius.circular(10),
               child: Container(
                 decoration: BoxDecoration(
-                  color: sel ? c.primary : null,
+                  gradient: sel ? Brand.gradient(context) : null,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: iso == today && !sel ? Brand.amber : (sel ? c.primary : c.outline)),
                 ),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// The web app's palette (src/app/globals.css): forest green with an amber accent.
+/// The web app's palette (src/app/globals.css): teal (with a teal → cyan gradient) and an amber accent.
 class Brand {
-  static const green = Color(0xFF1B7059);
-  static const greenLight = Color(0xFF3FA587);
+  static const teal = Color(0xFF0F766E); // teal-700
+  static const tealLight = Color(0xFF14B8A6); // teal-500, dark mode
   static const amber = Color(0xFFF8A020);
   static const ink = Color(0xFF1E3A31);
   static const muted = Color(0xFFEEF4F1);
@@ -21,6 +21,20 @@ class Brand {
   static const darkMutedInk = Color(0xFFA3A3A3);
   static const darkDanger = Color(0xFFE5675C);
 
+  /// Filled buttons and selected items: teal → cyan, like the web's --primary-gradient.
+  static LinearGradient gradient(BuildContext c) =>
+      Theme.of(c).brightness == Brightness.dark
+      ? const LinearGradient(
+          colors: [Color(0xFF14B8A6), Color(0xFF06B6D4)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        )
+      : const LinearGradient(
+          colors: [Color(0xFF0F766E), Color(0xFF0E7490)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        );
+
   /// Balance colours: who pays / who gets money back.
   static Color pays(BuildContext c) => Theme.of(c).colorScheme.error;
   static Color getsBack(BuildContext c) => Theme.of(c).colorScheme.primary;
@@ -32,7 +46,7 @@ ThemeData buildTheme(Brightness brightness) {
   final dark = brightness == Brightness.dark;
   final scheme = ColorScheme(
     brightness: brightness,
-    primary: dark ? Brand.greenLight : Brand.green,
+    primary: dark ? Brand.tealLight : Brand.teal,
     onPrimary: dark ? const Color(0xFF0A0A0A) : Colors.white,
     secondary: Brand.amber,
     onSecondary: Brand.ink,
@@ -50,7 +64,9 @@ ThemeData buildTheme(Brightness brightness) {
     outline: dark ? Brand.darkBorder : Brand.border,
     outlineVariant: dark ? Brand.darkBorder : Brand.border,
   );
-  final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(_radius));
+  final shape = RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(_radius),
+  );
   final border = OutlineInputBorder(
     borderRadius: BorderRadius.circular(_radius),
     borderSide: BorderSide(color: scheme.outline),
@@ -61,7 +77,11 @@ ThemeData buildTheme(Brightness brightness) {
     colorScheme: scheme,
     scaffoldBackgroundColor: dark ? Brand.darkBackground : Brand.background,
     dividerColor: scheme.outline,
-    dividerTheme: DividerThemeData(color: scheme.outline, space: 1, thickness: 1),
+    dividerTheme: DividerThemeData(
+      color: scheme.outline,
+      space: 1,
+      thickness: 1,
+    ),
     appBarTheme: AppBarTheme(
       backgroundColor: dark ? Brand.darkBackground : Brand.background,
       foregroundColor: scheme.onSurface,
@@ -87,11 +107,34 @@ ThemeData buildTheme(Brightness brightness) {
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       border: border,
       enabledBorder: border,
-      focusedBorder: border.copyWith(borderSide: BorderSide(color: scheme.primary, width: 2)),
+      focusedBorder: border.copyWith(
+        borderSide: BorderSide(color: scheme.primary, width: 2),
+      ),
       errorBorder: border.copyWith(borderSide: BorderSide(color: scheme.error)),
     ),
     filledButtonTheme: FilledButtonThemeData(
-      style: FilledButton.styleFrom(minimumSize: const Size(44, 44), shape: shape),
+      style:
+          FilledButton.styleFrom(
+            minimumSize: const Size(44, 44),
+            shape: shape,
+          ).copyWith(
+            // Enabled buttons are painted with the teal gradient; disabled ones keep the flat grey.
+            backgroundColor: WidgetStateProperty.resolveWith(
+              (states) => states.contains(WidgetState.disabled)
+                  ? scheme.onSurface.withValues(alpha: 0.12)
+                  : Colors.transparent,
+            ),
+            backgroundBuilder: (context, states, child) =>
+                states.contains(WidgetState.disabled)
+                ? child!
+                : DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: Brand.gradient(context),
+                      borderRadius: BorderRadius.circular(_radius),
+                    ),
+                    child: child,
+                  ),
+          ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
@@ -101,7 +144,9 @@ ThemeData buildTheme(Brightness brightness) {
         foregroundColor: scheme.onSurface,
       ),
     ),
-    textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(shape: shape)),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(shape: shape),
+    ),
     chipTheme: ChipThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
       side: BorderSide(color: scheme.outline),
@@ -111,7 +156,9 @@ ThemeData buildTheme(Brightness brightness) {
       surfaceTintColor: Colors.transparent,
       indicatorColor: scheme.primary.withValues(alpha: 0.14),
       height: 64,
-      labelTextStyle: WidgetStateProperty.all(const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w500)),
+      labelTextStyle: WidgetStateProperty.all(
+        const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w500),
+      ),
     ),
     tabBarTheme: TabBarThemeData(
       labelColor: scheme.onSurface,
@@ -121,7 +168,13 @@ ThemeData buildTheme(Brightness brightness) {
       indicator: BoxDecoration(
         color: scheme.surface,
         borderRadius: BorderRadius.circular(_radius - 2),
-        boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 3, offset: Offset(0, 1))],
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 3,
+            offset: Offset(0, 1),
+          ),
+        ],
       ),
     ),
     snackBarTheme: SnackBarThemeData(
@@ -131,7 +184,9 @@ ThemeData buildTheme(Brightness brightness) {
     dialogTheme: DialogThemeData(
       backgroundColor: scheme.surface,
       surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_radius + 4)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(_radius + 4),
+      ),
     ),
     bottomSheetTheme: BottomSheetThemeData(
       backgroundColor: scheme.surface,
